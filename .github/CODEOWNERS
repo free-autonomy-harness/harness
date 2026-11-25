@@ -1,0 +1,14 @@
+# Kernel: изменения только через ручной approve.
+/guard/            @beassaf01
+/verify/           @beassaf01
+/publish/          @beassaf01
+/targets/          @beassaf01
+/.github/          @beassaf01
+/scripts/common.py   @beassaf01
+/scripts/dispatch.py @beassaf01
+/scripts/notify.py   @beassaf01
+/scripts/resume.py   @beassaf01
+/scripts/usage.py    @beassaf01
+/scripts/import_tasks.py @beassaf01
+/scripts/bootstrap_labels.py @beassaf01
+/scripts/check_config.py @beassaf01

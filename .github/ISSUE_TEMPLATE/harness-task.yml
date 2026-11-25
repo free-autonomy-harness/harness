@@ -1,0 +1,35 @@
+name: Harness task
+description: Одна задача для автономного harness
+title: "[sandbox] "
+labels: ["harness:task"]
+body:
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target
+      options:
+        - sandbox
+        - core
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Что именно нужно сделать
+    validations:
+      required: true
+  - type: textarea
+    id: done_when
+    attributes:
+      label: Done when
+      description: Проверяемый критерий готовности
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Ограничения и запреты
+    validations:
+      required: false

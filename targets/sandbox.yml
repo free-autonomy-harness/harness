@@ -1,0 +1,8 @@
+alias: sandbox
+repo: beassaf01/harness-sandbox
+branch: main
+require_native_ci: false
+verify:
+  - name: readme-exists
+    run: test -s README.md
+    timeout_seconds: 60

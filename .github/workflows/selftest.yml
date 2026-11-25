@@ -1,0 +1,40 @@
+name: core / selftest
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Config check
+        run: python scripts/check_config.py
+
+      - name: Guard dry-run
+        run: |
+          tmp="$(mktemp -d)"
+          git init -q "$tmp/repo"
+          git -C "$tmp/repo" -c user.name=test -c user.email=test@local commit -q --allow-empty -m init
+          printf 'hello\n' > "$tmp/repo/README.md"
+          git -C "$tmp/repo" add README.md
+          git -C "$tmp/repo" diff --cached --binary > "$tmp/patch.diff"
+          python guard/check.py --repo "$tmp/repo" --patch "$tmp/patch.diff" --target sandbox --no-gitleaks

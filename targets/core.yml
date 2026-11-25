@@ -1,0 +1,22 @@
+alias: core
+repo: beassaf01/harness-core
+branch: main
+require_native_ci: true
+kernel_paths:
+  - "guard/"
+  - "verify/"
+  - "publish/"
+  - ".github/"
+  - "targets/"
+  - "scripts/common.py"
+  - "scripts/dispatch.py"
+  - "scripts/notify.py"
+  - "scripts/resume.py"
+  - "scripts/usage.py"
+  - "scripts/import_tasks.py"
+  - "scripts/bootstrap_labels.py"
+  - "scripts/check_config.py"
+verify:
+  - name: unit-tests
+    run: python -m unittest discover -s tests -v
+    timeout_seconds: 600

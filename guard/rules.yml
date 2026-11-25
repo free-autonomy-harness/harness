@@ -1,0 +1,39 @@
+# Guard rules. Kernel path: изменения только через approve.
+deny_paths:
+  - ".env*"
+  - "*.pem"
+  - "*.key"
+  - "id_*"
+  - ".github/workflows/**"
+
+# Требуют label allow-tests.
+protected_tests:
+  - "tests/**"
+  - "test_*.py"
+  - "conftest.py"
+
+# Требуют label allow-deps.
+dependency_files:
+  - "requirements*.txt"
+  - "pyproject.toml"
+  - "poetry.lock"
+  - "package.json"
+  - "package-lock.json"
+  - "go.mod"
+  - "go.sum"
+  - "Cargo.toml"
+  - "Cargo.lock"
+
+deny_symlinks: true
+deny_submodules: true
+deny_binary: true
+deny_large_files: true
+
+limits:
+  max_files: 300
+  max_patch_bytes: 2097152
+  max_lines: 20000
+  max_file_bytes: 1048576
+
+secrets:
+  gitleaks: true

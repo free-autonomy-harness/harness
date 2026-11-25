@@ -1,0 +1,124 @@
+name: core / publish
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: target alias (sandbox, core)
+        required: true
+        type: string
+      issue:
+        description: issue number
+        required: true
+        type: string
+      run_id:
+        description: work/agent run id with the harness-output artifact
+        required: true
+        type: string
+      work_repo:
+        description: owner/harness-work
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-publish-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Resolve repos
+        id: target
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          from scripts.common import load_target
+          repo = load_target("${{ inputs.target }}")["repo"]
+          print("repo=" + repo)
+          print("name=" + repo.split("/", 1)[1])
+          PY
+          echo "work_name=${WORK_REPO#*/}" >> "$GITHUB_OUTPUT"
+        env:
+          WORK_REPO: ${{ inputs.work_repo }}
+
+      - name: Core token (issues, variables)
+        id: core-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-issues: write
+          permission-actions: write
+
+      - name: Work token (artifact read)
+        id: work-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ steps.target.outputs.work_name }}
+          permission-actions: read
+
+      - name: Target token (write, PR, statuses)
+        id: target-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ steps.target.outputs.name }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-statuses: write
+          permission-checks: read
+          permission-workflows: write
+
+      - name: Download agent artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: harness-output
+          repository: ${{ inputs.work_repo }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ steps.work-token.outputs.token }}
+          path: artifact
+
+      - name: Install gitleaks
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz -C "$HOME/.local/bin" gitleaks
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Publish
+        env:
+          ISSUE_REPO: ${{ github.repository }}
+          TARGET_REPO: ${{ steps.target.outputs.repo }}
+          TARGET_TOKEN: ${{ steps.target-token.outputs.token }}
+          CORE_TOKEN: ${{ steps.core-token.outputs.token }}
+          WORK_RUN_URL: ${{ github.server_url }}/${{ inputs.work_repo }}/actions/runs/${{ inputs.run_id }}
+          PUBLISH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          VERIFY_WAIT_SECONDS: "600"
+        run: |
+          python publish/run.py \
+            --artifact-dir artifact \
+            --target "${{ inputs.target }}" \
+            --issue "${{ inputs.issue }}" \
+            --run-id "${{ inputs.run_id }}"
