@@ -42,8 +42,7 @@ Settings -> Developer settings -> GitHub Apps -> New GitHub App.
 
 Secrets:
 
-- `KILOCODE_API_KEY`
-- `NVIDIA_API_KEY`
+- `NVIDIA_API_KEY` (все NVIDIA NIM модели: GLM-5.3-Flash, Nemotron 3 Ultra, Nemotron 3.5 Super VL)
 - `GROQ_API_KEY`
 
 Variables (опционально):
@@ -104,13 +103,13 @@ GH_TOKEN=<token> python scripts/bootstrap_labels.py --repo OWNER/harness-core
 
 ```bash
 cd core && git init -b main && git add -A && git commit -m "core: phase 0-2 skeleton"
-git remote add origin git@github.com:OWNER/harness-core.git && git push -u origin main
+git remote add origin git@github.com:free-autonomy-harness/harness-core.git && git push -u origin main
 
 cd ../work && git init -b main && git add -A && git commit -m "work: hermes model chain"
-git remote add origin git@github.com:OWNER/harness-work.git && git push -u origin main
+git remote add origin git@github.com:free-autonomy-harness/harness-work.git && git push -u origin main
 
 cd ../sandbox && git init -b main && git add -A && git commit -m "sandbox: init"
-git remote add origin git@github.com:OWNER/harness-sandbox.git && git push -u origin main
+git remote add origin git@github.com:free-autonomy-harness/harness-sandbox.git && git push -u origin main
 ```
 
 Сначала запушьте `sandbox`, затем `core` и `work`: `core/dispatch` читает
@@ -119,11 +118,12 @@ base SHA из target.
 ## 7. Smoke моделей
 
 В `harness-work` запустите `work / check-models` (workflow_dispatch). Должны
-пройти три маршрута:
+пройти четыре маршрута:
 
-- `nemotron-ultra-kilo`
-- `nemotron-ultra-nvidia`
-- `gpt-oss-groq`
+- `glm-5.3-flash-nvidia` (NVIDIA NIM, GLM-5.3-Flash, **холодный старт до 45 сек**, таймаут 40 мин)
+- `nemotron-ultra-nvidia` (NVIDIA NIM, Nemotron 3 Ultra 550B)
+- `nemotron-super-vl-nvidia` (NVIDIA NIM, Nemotron 3.5 Super VL)
+- `gpt-oss-groq` (Groq, gpt-oss-120b)
 
 ## 8. Phase 0: dry-run
 

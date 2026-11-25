@@ -44,13 +44,14 @@
 
 ## Модели
 
-Chain в `work/scripts/model_chain.json`:
+Chain в `work/scripts/model_chain.json` (все NVIDIA через NIM, один ключ `NVIDIA_API_KEY`):
 
-1. `nvidia/nemotron-3-ultra-550b-a55b:free` (Kilo free).
-2. `nvidia/nemotron-3-ultra-550b-a55b` (NVIDIA NIM).
-3. `openai/gpt-oss-120b` (Groq, simple).
+1. `zai-org/glm-5.3-flash` (NVIDIA NIM) — primary, 60 мин таймаут.
+2. `nvidia/nemotron-3-ultra-550b-a55b` (NVIDIA NIM) — fallback на таймаут GLM, 30 мин.
+3. `nvidia/nemotron-3.5-super-vl-120b-a12b` (NVIDIA NIM) — fallback, 20 мин.
+4. `openai/gpt-oss-120b` (Groq, simple) — last resort, 15 мин.
 
-`validate_chain()` запрещает не-Nemotron на NVIDIA/Kilo и не-Groq модель на Groq.
+`validate_chain()` разрешает только эти 3 NVIDIA-модели и `gpt-oss-120b` на Groq.
 
 ## Границы
 

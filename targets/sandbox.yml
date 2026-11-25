@@ -1,5 +1,5 @@
 alias: sandbox
-repo: beassaf01/harness-sandbox
+repo: free-autonomy-harness/harness-sandbox
 branch: main
 require_native_ci: false
 verify:

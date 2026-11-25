@@ -21,7 +21,7 @@ class TargetsTest(unittest.TestCase):
 
     def test_sandbox_manifest(self) -> None:
         manifest = load_target("sandbox")
-        self.assertEqual(manifest["repo"], "beassaf01/harness-sandbox")
+        self.assertEqual(manifest["repo"], "free-autonomy-harness/harness-sandbox")
         self.assertFalse(manifest["require_native_ci"])
 
     def test_core_kernel_paths(self) -> None:

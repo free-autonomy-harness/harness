@@ -23,6 +23,7 @@
   - symlinks, submodules, binary, файлы > 1 МБ;
   - max 300 файлов / 2 МБ патча / 20k строк;
   - gitleaks по дереву (v8.30.1 в publish workflow);
+- gitleaks в `work/agent` (ранний скан workspace до artifact);
   - kernel paths core -> `requires_approval`, PR без auto-merge.
 
 ## Ключи моделей
@@ -31,8 +32,13 @@
 - Wrapper передаёт в контейнер только ключ текущего маршрута через env-file
   mode 0600; файл удаляется после запуска.
 - В логах ключи редактируются.
-- Остаточный риск: контейнер с ключом имеет сеть и может слить ключ.
-  Phase 3: egress allowlist.
+- **Egress allowlist**: контейнер запускается с `--cap-add=NET_ADMIN,NET_RAW`
+  и кастомным entrypoint (`work/scripts/egress-allowlist.sh`), который
+  настраивает iptables: default DROP OUTPUT, разрешены только ESTABLISHED/RELATED,
+  loopback, DNS (UDP/TCP 53) и HTTPS (443) к API провайдеров:
+  - NVIDIA NIM: `integrate.api.nvidia.com` (все NVIDIA модели идут сюда)
+  - Groq: `api.groq.com`
+  Плюс `registry.npmjs.org`, `pypi.org`, `files.pythonhosted.org` для зависимостей.
 
 ## Проверки
 
@@ -43,5 +49,6 @@
 
 ## TODO
 
-- [ ] phase 2: egress allowlist не реализован (phase 3).
+- [x] gitleaks в `work/agent` (ранний скан workspace).
+- [x] egress allowlist для контейнера (iptables в entrypoint).
 - [ ] phase 3: подпись/аттестация артефактов, если понадобится.

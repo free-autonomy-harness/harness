@@ -1,5 +1,5 @@
 alias: core
-repo: beassaf01/harness-core
+repo: free-autonomy-harness/harness-core
 branch: main
 require_native_ci: true
 kernel_paths:

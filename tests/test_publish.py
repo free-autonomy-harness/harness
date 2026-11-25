@@ -62,7 +62,7 @@ class PublishTest(unittest.TestCase):
             "target": "sandbox",
             "issue": 7,
             "base_sha": "a" * 40,
-            "route": "nemotron-ultra-kilo",
+            "route": "glm-5.3-flash-cloudflare",
         }
         (artifact / "meta.json").write_text(json.dumps(meta), encoding="utf-8")
         (artifact / "patch.diff").write_text("diff\n", encoding="utf-8")
