@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # harness-core
 
 Диспетчер и единственный write/merge-узел harness.
@@ -18,3 +19,6 @@ python scripts/check_config.py
 ```
 
 Установка: `docs/bootstrap.md`.
+=======
+# harness
+>>>>>>> db194c3f256502b240a21e591bf7e07598e37d0f
