@@ -19,6 +19,4 @@ python scripts/check_config.py
 ```
 
 Установка: `docs/bootstrap.md`.
-=======
-# harness
->>>>>>> db194c3f256502b240a21e591bf7e07598e37d0f
+
