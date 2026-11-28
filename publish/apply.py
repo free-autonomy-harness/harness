@@ -31,8 +31,8 @@ def clone_target(repo: str, base_sha: str, dest: Path, token: str, *, depth: int
     git(dest, *fetch, token=token, timeout=300)
     # FETCH_HEAD работает и для SHA, и для имени ветки.
     git(dest, "checkout", "--detach", "FETCH_HEAD", token=token, timeout=120)
-    git(dest, "config", "user.name", "harness-bot")
-    git(dest, "config", "user.email", "harness-bot@users.noreply.github.com")
+    git(dest, "config", "user.name", "free-autonomy-harness-bot[bot]")
+    git(dest, "config", "user.email", "361107743+free-autonomy-harness-bot[bot]@users.noreply.github.com")
     return dest
 
 

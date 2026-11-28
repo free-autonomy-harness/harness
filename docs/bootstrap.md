@@ -14,7 +14,7 @@
 Репозитории должны иметь ветку `main`. В `harness-sandbox` достаточно
 `.gitkeep`; README появится в первой задаче.
 
-## 2. GitHub App `harness-bot`
+## 2. GitHub App `free-autonomy-harness-bot`
 
 Settings -> Developer settings -> GitHub Apps -> New GitHub App.
 
@@ -34,7 +34,25 @@ Settings -> Developer settings -> GitHub Apps -> New GitHub App.
 Сгенерируйте private key. В `harness-core` и `harness-work` добавьте secrets:
 
 - `APP_ID`
-- `APP_PRIVATE_KEY` (содержимое `.pem`)
+- `APP_PRIVATE_KEY` (содержимое `.pem`, полный PEM с реальными переносами строк; задать через `gh secret set APP_PRIVATE_KEY < key.pem`)
+
+Имя приложения не влияет на аутентификацию: `actions/create-github-app-token`
+использует только `APP_ID` и приватный ключ. Оно нужно лишь для атрибуции
+коммитов. Бот-пользователь приложения — `free-autonomy-harness-bot[bot]`
+(user ID `361107743`), поэтому author коммитов в `publish/apply.py` должен быть
+`free-autonomy-harness-bot[bot] <361107743+free-autonomy-harness-bot[bot]@users.noreply.github.com>`.
+
+Если `core / dispatch` падает на шаге `GitHub App token` с `Invalid keyData`,
+секрет `APP_PRIVATE_KEY` содержит некорректный PEM. Убедитесь, что это полное
+содержимое `.pem` (включая строки `BEGIN`/`END`) с реальными переносами строк,
+без кавычек и экранированных `\n`, и что секрет задан в том же репозитории, где
+запускается workflow. Проверить файл локально можно так:
+
+```bash
+openssl pkey -in key.pem -noout -check
+gh secret set APP_PRIVATE_KEY < key.pem --repo OWNER/harness-core
+gh secret set APP_PRIVATE_KEY < key.pem --repo OWNER/harness-work
+```
 
 ## 3. Secrets и variables
 

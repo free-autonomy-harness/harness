@@ -2,7 +2,7 @@
 
 ## Модель прав
 
-- GitHub App `harness-bot`, не PAT. Токены downscope по job через
+- GitHub App `free-autonomy-harness-bot`, не PAT. Токены downscope по job через
   `actions/create-github-app-token`.
 - `work/agent`: `contents:read`; контейнер не получает GitHub-токен.
 - `work/notify`: только dispatch `core/publish`.
